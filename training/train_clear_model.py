@@ -9,7 +9,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 
-from CLEAR_model.clear_modal import ClearLocModel
+from training.CLEAR_lightning_module import ClearLocModel
 from CLEAR_model.clear_dataset import CLEAR_Dataset
 from datetime import datetime
 
