@@ -11,7 +11,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint, StochasticWeightAveragi
 
 from training.RRP_lightning_module import RRPLightningModule
 from RRP_model.RRP_lightning_datamodule import RRPDataModule
-from training.callbacks import ImageLoggerCallback
+from training.RRP_callbacks import ImageLoggerCallback
 
 def main(config, logger=True):
     # ==============================Data Module==============================
