@@ -9,20 +9,20 @@ import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint, StochasticWeightAveraging
 
-from training.RRP_lightning_module import FlonaLightningModule
-from RRP_model.RRP_lightning_datamodule import FlonaDataModule
+from training.RRP_lightning_module import RRPLightningModule
+from RRP_model.RRP_lightning_datamodule import RRPDataModule
 from training.callbacks import ImageLoggerCallback
 
 def main(config, logger=True):
     # ==============================Data Module==============================
-    data_module = FlonaDataModule(
+    data_module = RRPDataModule(
         data_config=config["datasets"],
         batch_size=config["batch_size"],
         eval_batch_size=config.get("eval_batch_size"),
         num_workers=config["num_workers"],
     )
 
-    model = FlonaLightningModule(
+    model = RRPLightningModule(
         config=config,
     )
 

@@ -14,59 +14,10 @@ from CLEAR_model.depth_anything_v2.util.transform import Resize, NormalizeImage,
 from CLEAR_model.network_utils import *
 import math
 
-class RRP(nn.Module):
-    def __init__(self, encoder="vits", fH=30, fW=40, embed_dim=128, **kwargs):
-        super().__init__()
-        # 特征提取
-        self.feature_extractor = RRPFeatureExtractor(
-            encoder=encoder, 
-            fH=fH, 
-            fW=fW, 
-            embed_dim=embed_dim,
-            **kwargs # 传入 num_heads 等其他参数
-        )
-        # 深度和不确定性头
-        self.prediction_head = DepthUncertaintyHead(
-            in_features=embed_dim
-        )
-
-    def forward(self, obs_img, mask=None):
-
-        # 1. 特征提取
-        # x_feat: (B, 40, 128), attn_w: (B, 40, 1200)
-        x_feat, attn_w = self.feature_extractor(obs_img, mask)
-        
-        # 2. 预测深度和不确定性
-        # d_hat: (B, 40), b_hat: (B, 40)
-        d_hat, b_hat = self.prediction_head(x_feat)
-        
-        return d_hat, b_hat, attn_w
-    
-class DepthUncertaintyHead(nn.Module):
-    def __init__(self, in_features=128):
-        super().__init__()
-        # 论文中提到的两个并行全连接层 
-        # 预测深度 d_t
-        self.depth_head = nn.Linear(in_features, 1)
-        # 预测不确定性 b_t
-        self.uncertainty_head = nn.Linear(in_features, 1)
-
-    def forward(self, x):
-        # 1. 预测深度 
-        # (B, 40, 128) -> (B, 40, 1) -> (B, 40)
-        d_hat = self.depth_head(x).squeeze(-1)
-        # (B, 40, 128) -> (B, 40, 1) -> (B,  40)
-
-        b_hat = F.softplus(self.uncertainty_head(x)).squeeze(-1)
-        
-        return d_hat, b_hat
-
 class RRPFeatureExtractor(nn.Module):
-    def __init__(self, encoder="vits", fH=30, fW=40, embed_dim=128, pos_embed_dim=32, num_heads=8, target_size=(23, 40), checkpoint_path=None):
+    def __init__(self, encoder="vits", embed_dim=128, pos_embed_dim=32, num_heads=8, target_size=(23, 40), checkpoint_path=None):
         super().__init__()
         
-        self.fH = fH 
-        self.fW = fW
         self.embed_dim = embed_dim
         self.pos_embed_dim = pos_embed_dim
         self.intermediate_layer_idx = 11 
@@ -85,13 +36,6 @@ class RRPFeatureExtractor(nn.Module):
         # 冻结试试
         for param in self.pretrained.parameters():
             param.requires_grad = False
-        # 解冻最后一层
-        # if hasattr(self.pretrained, 'blocks'):
-        #     for param in self.pretrained.blocks[self.intermediate_layer_idx].parameters():
-        #         param.requires_grad = True
-        # if hasattr(self.pretrained, 'norm'):
-        #     for param in self.pretrained.norm.parameters():
-        #         param.requires_grad = True
                 
         # (B, 384, 30, 40) -> (B, 128, 30, 40)
         self.conv = ConvBnReLU(
@@ -225,6 +169,7 @@ class RRPFeatureExtractor(nn.Module):
         x_out, attn_w = self.attn(query, key, value, attn_mask=attn_mask)
         
         return x_out, attn_w, class_token
+    
 class VerticalAttentionPooling(nn.Module):
     def __init__(self, in_channels, hidden_channels=64):
         super().__init__()

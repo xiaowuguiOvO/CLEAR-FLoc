@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 from RRP_model.RRP_dataset import RRP_Dataset
 
-class FlonaDataModule(pl.LightningDataModule):
+class RRPDataModule(pl.LightningDataModule):
     def __init__(self, data_config: dict, batch_size: int, num_workers: int, eval_batch_size: int = None):
         super().__init__()
         self.data_config = data_config

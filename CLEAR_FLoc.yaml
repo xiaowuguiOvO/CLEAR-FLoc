@@ -1,5 +1,6 @@
 # General Training Configuration
-run_name: "cross_modal_pretrain"
+project_name: "clear_model"
+run_name: "clear_model"
 use_wandb: true
 gpu_ids: [0]
 epochs: 20

@@ -5,30 +5,15 @@ import torchvision.transforms.functional as fn
 from torchvision.models._utils import IntermediateLayerGetter
 from torchvision.models.resnet import resnet50
 from typing import Optional
-from model.mono.depth_net import depth_feature_res
-from model.models import *
-from model.unloc import UnlocFeatureExtractor
 
+from RRP_model.RRP import RRPFeatureExtractor
+from RRP_model.models import *
 class DepthPredModels(nn.Module):
     def __init__(self, config, encoder_type="dptv2", decoder_type="f3mlp"):
         super().__init__()
-        """
-        encoder:
-            res50: resnet50
-            dptv2: DepthAnythingV2的dinoV2
-            res50_3D: Res50 3D先验
-            res50_RSK Res50 Rsk
-        decoder:
-            f3mlp: 分类bin
-            rrp: 与f3mlp一致 (F3MlpDecoder)
-            
-        修改encoder以后，要检查_encoder()函数的逻辑，是否能给decoder返回正确的tensor[B, 40, 128]
-        """
+
         self.config = config
         self.encoder_type = encoder_type
-        # 兼容旧配置 "unloc" -> "rrp"
-        if decoder_type == "unloc":
-            decoder_type = "rrp"
         self.decoder_type = decoder_type # f3mlp / rrp
         
         # encoder
@@ -50,13 +35,7 @@ class DepthPredModels(nn.Module):
             raise NotImplementedError
 
     def _encode(self, obs_img):
-        if self.encoder_type == "res50":
-            features, _ = self.res50_encoder(obs_img)
-        elif self.encoder_type == "res50_3D":
-            features, _ = self.res50_3D(obs_img)
-        elif self.encoder_type == "res50_RSK":
-            features, _ = self.res50_RSK(obs_img)
-        elif self.encoder_type == "dptv2":
+        if self.encoder_type == "dptv2":
             features, _, _ = self.dptv2_encoder(obs_img=obs_img)
         return features
     
@@ -92,13 +71,7 @@ class DepthPredModels(nn.Module):
     
     def _init_encoders(self):
         if self.encoder_type == "dptv2":
-            self.dptv2_encoder = UnlocFeatureExtractor(checkpoint_path=self.config["dptv2_ckpt_path"])
-        elif self.encoder_type == "res50":
-            self.res50_encoder = depth_feature_res()
-        elif self.encoder_type == "res50_3D":
-            self.res50_3D = depth_feature_res(checkpoint_path=self.config["res50_3D_ckpt_path"])
-        elif self.encoder_type == "res50_RSK":
-            self.res50_RSK = depth_feature_res(checkpoint_path=self.config["res50_RSK_ckpt_path"])
+            self.dptv2_encoder = RRPFeatureExtractor(checkpoint_path=self.config["dptv2_ckpt_path"])
     
     def _init_decoders(self):
         if self.decoder_type == "f3mlp":

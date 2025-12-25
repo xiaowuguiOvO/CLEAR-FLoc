@@ -13,7 +13,7 @@ from utils.data_utils import *
 from utils.localization_utils import *
 
 from training.RRP_lightning_module import RRPLightningModule
-from CLEAR_model.clear_modal import ClearLocModel
+from training.CLEAR_lightning_module import ClearLocModel
 
 # Global Args
 parser = argparse.ArgumentParser(description="Eval with Clear Model")
@@ -26,8 +26,8 @@ parser.add_argument("--ckpt_path", type=str, default="./eval/logs")
 parser.add_argument("--visualize", action="store_true")
 
 # New Args for CrossModal
-parser.add_argument("--rrp_model_ckpt", type=str, default='checkpoints\RRP_s3d_best.ckpt', help="Path to RRP checkpoint")
-parser.add_argument("--clear_model_ckpt", type=str, default='logs\CLEAR_s3d_best', help="Path to CLEAR checkpoint")
+parser.add_argument("--rrp_model_ckpt", type=str, default='logs\\rrp_runs\\rrp_model_20251225_202818\\checkpoints\\epoch=04-val_action_loss=0.81.ckpt', help="Path to RRP checkpoint")
+parser.add_argument("--clear_model_ckpt", type=str, default='logs\\clear_runs\\clear_model_20251225_195749\\checkpoints\\epoch=05-val_acc=0.74_20251225_195753.ckpt', help="Path to CLEAR checkpoint")
 parser.add_argument("--top_k", type=int, default=100, help="Number of candidates to re-rank")
 parser.add_argument("--alpha", type=float, default=0.3, help="Weight of semantic score")
 parser.add_argument("--clear_only", action="store_true", help="If True, ignore geometric probability and only use cross-modal score")
@@ -220,7 +220,7 @@ def evaluate():
         # --- 1. Geometric Prediction (RRP) ---
         with torch.no_grad():
             feat = rrp_model("encode", obs_img=obs_img_tensor)
-            pred_depths_tensor, b_tensor = rrp_model("decoder_inference", depth_cond=feat, return_uncertainty=True)
+            pred_depths_tensor = rrp_model("decoder_inference", depth_cond=feat, return_uncertainty=True)
             pred_depths = pred_depths_tensor.squeeze(0).detach().cpu().numpy()
             
             # Get Rays

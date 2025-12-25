@@ -1,10 +1,10 @@
-project_name: flona
-run_name: flona
+project_name: rrp_model
+run_name: rrp_model
 
 # encoder / decoder type
 
 encoder_type: dptv2 # [res50, res50_3D, res50_RSK, dptv2, RMD]
-decoder_type: unloc # ['f3mlp', diffusion, unloc]
+decoder_type: rrp # ['f3mlp', diffusion, rrp]
 
 
 # =====training setup=====
@@ -13,7 +13,7 @@ train: True
 batch_size: 4  #1
 epochs: 400
 gpu_ids: [0]     # 1
-num_workers: 4  #1
+num_workers: 2  #1
 lr: 1e-3
 optimizer: adamw
 max_norm: 1.
@@ -64,5 +64,3 @@ eval_freq: 1 # in epochs
 
 # checkpoints
 dptv2_ckpt_path: checkpoints/depth_anything_v2_vits.pth
-res50_3D_ckpt_path: checkpoints/resnet50_3DPrior.pth
-res50_RSK_ckpt_path: checkpoints/resnet50_RSK.pth
