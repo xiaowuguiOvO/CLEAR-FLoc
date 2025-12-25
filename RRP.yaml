@@ -13,7 +13,7 @@ train: True
 batch_size: 4  #1
 epochs: 400
 gpu_ids: [0]     # 1
-num_workers: 6  #1
+num_workers: 4  #1
 lr: 1e-3
 optimizer: adamw
 max_norm: 1.

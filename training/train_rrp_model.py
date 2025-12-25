@@ -10,7 +10,7 @@ from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint, StochasticWeightAveraging
 
 from training.RRP_lightning_module import FlonaLightningModule
-from model.lightning_datamodule import FlonaDataModule
+from RRP_model.RRP_lightning_datamodule import FlonaDataModule
 from training.callbacks import ImageLoggerCallback
 
 def main(config, logger=True):
@@ -77,11 +77,11 @@ def main(config, logger=True):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Visual Navigation Transformer")
+    parser = argparse.ArgumentParser(description="RRP")
     parser.add_argument(
         "--config",
         "-c",
-        default="flona.yaml",
+        default="RRP.yaml",
         type=str,
         help="Path to the config file",
     )
@@ -90,10 +90,10 @@ if __name__ == "__main__":
         config = yaml.safe_load(f)
 
     # Project folder setup
-    run_name = config.get("run_name", "flona_run") + "_" + time.strftime("%Y%m%d_%H%M%S")
+    run_name = config.get("run_name", "rrp_run") + "_" + time.strftime("%Y%m%d_%H%M%S")
     config["run_name"] = run_name
     project_folder = os.path.join(
-        "logs", config.get("project_name", "flona_project"), run_name
+        "logs", "rrp_runs", run_name
     )
     config["project_folder"] = project_folder
     os.makedirs(project_folder, exist_ok=True)

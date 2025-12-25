@@ -66,6 +66,10 @@ def main(config):
     # Model
     model = CrossModalLocModel(config)
     
+    # Project folder setup
+    project_folder = os.path.join("logs", "clear_runs", config['run_name'])
+    os.makedirs(project_folder, exist_ok=True)
+
     # Logger
     logger = True
     if config.get("use_wandb", False):
@@ -78,7 +82,7 @@ def main(config):
     # Generate a timestamp for the filename
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     checkpoint_callback = ModelCheckpoint(
-        dirpath=os.path.join("logs", config['run_name'], "checkpoints"),
+        dirpath=os.path.join(project_folder, "checkpoints"),
         filename='{epoch:02d}-{val_acc:.2f}_' + timestamp, # Add timestamp to filename
         save_top_k=3,
         monitor='val_acc',
@@ -95,6 +99,7 @@ def main(config):
         max_epochs=config.get("epochs", 50),
         callbacks=[checkpoint_callback],
         logger=logger,
+        default_root_dir=project_folder,
         log_every_n_steps=10
     )
     

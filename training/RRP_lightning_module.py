@@ -26,7 +26,6 @@ class FlonaLightningModule(pl.LightningModule):
             ray,
             floorplan_img,
             wh,
-            rmd_matrix
         ) = batch
         
         # Get vision features
@@ -41,7 +40,7 @@ class FlonaLightningModule(pl.LightningModule):
             if (self.global_step + 1) % self.image_log_freq == 0:
                 self.model.eval()
                 with torch.no_grad():
-                    features = self.model("encode", obs_img=batch_obs_image, rmd_matrix=rmd_matrix)
+                    features = self.model("encode", obs_img=batch_obs_image)
                     pred_d = self.model("decoder_inference", depth_cond=features, num_samples=1)
                     
                     action_loss = F.mse_loss(pred_d, ray.squeeze(-1))
@@ -56,10 +55,9 @@ class FlonaLightningModule(pl.LightningModule):
                 ray,
                 floorplan_img,
                 wh,
-                rmd_matrix
             ) = batch
 
-            features = self.model("encode", obs_img=batch_obs_image, rmd_matrix=rmd_matrix)
+            features = self.model("encode", obs_img=batch_obs_image)
             pred_d = self.model("decoder_inference", depth_cond=features, num_samples=1)
 
             val_loss = F.mse_loss(pred_d, ray)
