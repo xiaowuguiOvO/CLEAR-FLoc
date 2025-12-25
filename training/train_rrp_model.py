@@ -90,7 +90,7 @@ if __name__ == "__main__":
         config = yaml.safe_load(f)
 
     # Project folder setup
-    run_name = config.get("run_name", "rrp_run") + "_" + time.strftime("%Y%m%d_%H%M%S")
+    run_name = config.get("run_name", "rrp_model") + "_" + time.strftime("%Y%m%d_%H%M%S")
     config["run_name"] = run_name
     project_folder = os.path.join(
         "logs", "rrp_runs", run_name
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     if config.get("use_wandb", False):
         try:
             logger = WandbLogger(
-                project=config.get("project_name", "flona_project"),
+                project=config.get("project_name", "rrp_model"),
                 name=run_name,
                 config=config,
             )

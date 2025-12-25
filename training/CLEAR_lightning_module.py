@@ -8,7 +8,7 @@ from warmup_scheduler import GradualWarmupScheduler
 
 from RRP_model.depth_models import DepthPredModels
 
-class FlonaLightningModule(pl.LightningModule):
+class CLEARLightningModule(pl.LightningModule):
     def __init__(self, config):
         super().__init__()
         self.save_hyperparameters(config)

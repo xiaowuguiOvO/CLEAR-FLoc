@@ -7,7 +7,7 @@ from torch.optim import AdamW
 from warmup_scheduler import GradualWarmupScheduler
 
 from model.flona import f3dif
-class FlonaLightningModule(pl.LightningModule):
+class RRPLightningModule(pl.LightningModule):
     def __init__(self, config):
         super().__init__()
         self.save_hyperparameters(config)

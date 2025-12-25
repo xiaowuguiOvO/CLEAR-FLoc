@@ -5,7 +5,9 @@ gpu_ids: [0]
 epochs: 20
 batch_size: 64
 num_workers: 4
-train_viz_step: 1000  # Visualization frequency (steps)
+image_log_freq: 1000  # Visualization frequency (steps)
+encoder_type: "dptv2"
+decoder_type: "rrp"
 
 # Model Configuration
 dptv2_ckpt_path: "checkpoints/depth_anything_v2_vits.pth"

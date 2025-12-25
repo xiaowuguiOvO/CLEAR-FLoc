@@ -74,7 +74,7 @@ def main(config):
     logger = True
     if config.get("use_wandb", False):
         try:
-            logger = WandbLogger(project="flona_cross_modal", name=config['run_name'])
+            logger = WandbLogger(project="clear_model", name=config['run_name'])
         except:
             pass
     
@@ -108,7 +108,7 @@ def main(config):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="CLAER_FLoc.yaml", type=str)
+    parser.add_argument("--config", default="CLEAR_FLoc.yaml", type=str)
     # Allow overriding batch size from CLI
     parser.add_argument("--batch_size", default=64, type=int)
     parser.add_argument("--run_name", default=None, type=str, help="Experiment name. If not provided, adds timestamp to default.")
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         config['run_name'] = args.run_name
     else:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        config['run_name'] = f"cross_modal_pretrain_{timestamp}"
+        config['run_name'] = f"clear_model_{timestamp}"
 
     config['batch_size'] = args.batch_size
     config['epochs'] = 20
