@@ -7,7 +7,7 @@ from torchvision.models.resnet import resnet50
 from typing import Optional
 from model.mono.depth_net import depth_feature_res
 from model.models import *
-from model.unloc import UnlocFeatureExtractor, DepthUncertaintyHead
+from model.unloc import UnlocFeatureExtractor
 
 class DepthPredModels(nn.Module):
     def __init__(self, config, encoder_type="dptv2", decoder_type="f3mlp"):
@@ -20,12 +20,15 @@ class DepthPredModels(nn.Module):
             res50_RSK Res50 Rsk
         decoder:
             f3mlp: 分类bin
-            rrp: RRP
+            rrp: 与f3mlp一致 (F3MlpDecoder)
             
         修改encoder以后，要检查_encoder()函数的逻辑，是否能给decoder返回正确的tensor[B, 40, 128]
         """
         self.config = config
         self.encoder_type = encoder_type
+        # 兼容旧配置 "unloc" -> "rrp"
+        if decoder_type == "unloc":
+            decoder_type = "rrp"
         self.decoder_type = decoder_type # f3mlp / rrp
         
         # encoder
@@ -42,7 +45,7 @@ class DepthPredModels(nn.Module):
             return self._decoder_train_get_pred_loss(cond=kwargs["depth_cond"], gt_ray=kwargs["gt_ray"])
         
         elif func_name == "decoder_inference":
-            return self._decoder_inference_get_pred(cond=kwargs["depth_cond"], num_samples=kwargs.get("num_samples", 1), return_uncertainty=kwargs.get("return_uncertainty", False))
+            return self._decoder_inference_get_pred(cond=kwargs["depth_cond"], num_samples=kwargs.get("num_samples", 1))
         else:
             raise NotImplementedError
 
@@ -63,11 +66,11 @@ class DepthPredModels(nn.Module):
         elif self.decoder_type == "rrp":
             return self._forward_rrp_train(cond, gt_ray)
         
-    def _decoder_inference_get_pred(self, cond, num_samples=1, return_uncertainty=False):
+    def _decoder_inference_get_pred(self, cond, num_samples=1):
         if self.decoder_type == "f3mlp":
             return self._forward_mlp_inference(cond)
         elif self.decoder_type == "rrp":
-            return self._forward_rrp_inference(cond, return_uncertainty)
+            return self._forward_rrp_inference(cond)
             
     def _forward_mlp_train(self, cond, gt_ray):
         pred = self.f3mlp_decoder(cond)
@@ -79,24 +82,13 @@ class DepthPredModels(nn.Module):
         return pred
     
     def _forward_rrp_train(self, cond, gt_ray):
-        d, b = self.rrp_decoder(cond)
-        
-        epsilon = 1e-6
-        abs_error = torch.abs(d - gt_ray) # |d_i - d_i(s)|
-        term_1 = torch.log(b + epsilon) # log(b_i)
-        term_2 = abs_error / (b + epsilon) #|d_i - d_i(s)| / b_i
-        loss = torch.mean(term_1 + term_2) # 在批次和射线维度上取平均
-        mean_abs_error = torch.mean(abs_error)
-        mean_uncertainty = torch.mean(b)
+        d = self.rrp_decoder(cond)
+        loss = F.l1_loss(d, gt_ray)
         return {"pred": d, "loss": loss}
     
-    def _forward_rrp_inference(self, cond, return_uncertainty=False):
-        d, b = self.rrp_decoder(cond)
-        
-        if return_uncertainty:
-            return d, b
-        else:
-            return d
+    def _forward_rrp_inference(self, cond):
+        d = self.rrp_decoder(cond)
+        return d
     
     def _init_encoders(self):
         if self.encoder_type == "dptv2":
@@ -112,4 +104,4 @@ class DepthPredModels(nn.Module):
         if self.decoder_type == "f3mlp":
             self.f3mlp_decoder = F3MlpDecoder()
         elif self.decoder_type == "rrp":
-            self.rrp_decoder = DepthUncertaintyHead()
+            self.rrp_decoder = F3MlpDecoder()
