@@ -1,2 +1,3 @@
 checkpoints/
 datasets_s3d/
+wandb/

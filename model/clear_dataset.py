@@ -190,26 +190,10 @@ class CLEAR_Dataset(Dataset):
         # Adjust center for padding
         center = (x + pad, y + pad)
         
-        # 2. Rotate Map to align with robot heading
-        # We want robot heading to point UP in the image (-y direction)
-        # S3D/Standard Map: 0 degrees is typically along X-axis (Right)
-        # To make Right point Up, we rotate +90 degrees (Counter-Clockwise).
-        # And we subtract the robot's current heading.
         angle_deg = np.degrees(theta) 
-        # Rotation: We want to rotate the map by (-theta - 90) so that the robot's heading becomes UP?
-        # Actually, let's keep it simple: rotate by `angle_deg` makes the world X-axis align with image X.
-        # We want to rotate such that the robot vector `theta` aligns with Up `(0, -1)`.
-        # Robot vector is `(cos(th), sin(th))`.
-        # Up vector is `(0, -1)`.
-        # Angle from Robot to Up is `-90 - th`.
-        
+
         rot_matrix = cv2.getRotationMatrix2D(center, angle_deg + 90, 1.0)
-        
-        # 3. Warp and Crop
-        # We can do warpAffine with specific size to crop directly
-        # But warpAffine usually takes the whole image size. 
-        # A trick is to modify the translation part of the matrix to move the center to (S/2, S/2)
-        
+
         rot_matrix[0, 2] += (crop_size_px / 2.0) - center[0]
         rot_matrix[1, 2] += (crop_size_px / 2.0) - center[1]
         
