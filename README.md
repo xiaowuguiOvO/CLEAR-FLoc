@@ -2,7 +2,7 @@
 
 <p align="center">
     <a href="https://arxiv.org/abs/YOUR_ARXIV_ID"><img src="https://img.shields.io/badge/arXiv-25xx.xxxxx-b31b1b.svg"></a>
-    <a href="https://xiaowuguiovo.github.io/CLEAR-FLoc_Project_Website/"><img src="https://img.shields.io/badge/Project-Website-blue.svg"></a>
+    <a href="https://xiaowuguiovo.github.io/DisCo-FLoc_Project_Website/"><img src="https://img.shields.io/badge/Project-Website-blue.svg"></a>
     <a href="https://your-paper-link.pdf"><img src="https://img.shields.io/badge/Paper-PDF-green.svg"></a>
 </p>
 
@@ -16,7 +16,7 @@
   <img src="assets/framework.png" width="100%">
 </div>
 
-This repository contains the implementation for paper **CLEAR-FLoc: Using Dual-Level Visual-Geometric Contrasts to Disambiguate Depth-Aware Visual Floorplan Localization**.
+This repository contains the implementation for paper **DisCo-FLoc: Using Dual-Level Visual-Geometric Contrasts to Disambiguate Depth-Aware Visual Floorplan Localization**.
 
 ## Environment Setup
 
