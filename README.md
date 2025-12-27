@@ -6,6 +6,12 @@
     <a href="https://your-paper-link.pdf"><img src="https://img.shields.io/badge/Paper-PDF-green.svg"></a>
 </p>
 
+<p align="center">
+    <strong>Shiyong Meng, Tao Zou, Bolei Chen*, Jianxin Wang</strong>
+    <br>
+    (*Corresponding Author)
+</p>
+
 <div align="center">
   <img src="assets/framework.png" width="100%">
 </div>
