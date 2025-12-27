@@ -9,7 +9,6 @@
 <p align="center">
     <strong>Shiyong Meng, Tao Zou, Bolei Chen*, Jianxin Wang</strong>
     <br>
-    (*Corresponding Author)
 </p>
 
 <div align="center">
